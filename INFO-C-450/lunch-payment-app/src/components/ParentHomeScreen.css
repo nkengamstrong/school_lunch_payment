@@ -1,0 +1,50 @@
+.home-page {
+    font-family: Arial, sans-serif;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-info button {
+    margin-left: 10px;
+    padding: 5px 10px;
+}
+
+.students-section,
+.transaction-history {
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+.student-actions button {
+    margin-right: 10px;
+    padding: 5px 10px;
+}
+
+.students-table,
+.transaction-history table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.students-table th,
+.students-table td,
+.transaction-history th,
+.transaction-history td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+p {
+    color: #777;
+    font-style: italic;
+}
