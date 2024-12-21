@@ -22,7 +22,7 @@ app.use(cookieParser());
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "password",
+  password: "Mikidung1%",
   database: "lunch_payment",
 });
 
@@ -112,7 +112,8 @@ app.get("/getStudents", (req, res) => {
       students.id,
       students.name,
       students.student_id,
-      accounts.balance
+      accounts.balance,
+      accounts.account_id
     FROM 
       students
     JOIN 
@@ -127,6 +128,66 @@ app.get("/getStudents", (req, res) => {
     }
     console.log("Result from get All student ", result);
     return res.json(result);
+  });
+});
+
+app.get("/studentBalance", (req, res) => {
+  const { student_id } = req.query;
+  const balanceQuery = `
+    SELECT 
+      students.id,
+      students.name,
+      students.student_id,
+      accounts.balance,
+      parents.first_name,
+      parents.last_name,
+      accounts.account_id
+    FROM 
+      students
+    JOIN 
+      accounts ON students.id = accounts.student_id
+    JOIN
+      parents ON students.parent_id = parents.parent_id
+    WHERE 
+      students.student_id = ?;
+  `;
+
+  db.query(balanceQuery, [student_id], (err, results) => {
+    if (err) {
+      console.error("Error executing balance query:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).json({ error: "Student not found" });
+      return;
+    }
+
+    res.json({ balance: results[0] });
+  });
+});
+
+// Endpoint to check student balance
+app.post("/student", (req, res) => {
+  const { studentId } = req.body;
+  const studentQuery = `
+    SELECT student_id FROM students WHERE student_id = ?;
+  `;
+
+  db.query(studentQuery, [studentId], (err, results) => {
+    if (err) {
+      console.error("Error executing student query:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).json({ error: "Student not found" });
+      return;
+    }
+
+    res.json({ message: "Student Identify" });
   });
 });
 
@@ -147,7 +208,7 @@ FROM
 JOIN 
     Students s ON p.parent_id = s.parent_id
 JOIN 
-    Accounts a ON s.student_id = a.student_id
+    Accounts a ON s.id = a.student_id
 JOIN 
     Transactions t ON a.account_id = t.account_id
 WHERE 
@@ -159,6 +220,106 @@ WHERE
     console.log("Result from Transaction ", result);
     return res.json(result);
   });
+});
+
+// Endpoint to get student balance
+app.get("/getStudentBalance", (req, res) => {
+  const { student_id } = req.query;
+  const sql = `
+    SELECT 
+      students.id,
+      students.name,
+      students.student_id,
+      accounts.balance,
+      accounts.account_id
+    FROM 
+      students
+    JOIN 
+      accounts ON students.id = accounts.student_id
+    WHERE 
+      students.id = ?;
+  `;
+
+  db.query(sql, [student_id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+    console.log("$$student Balance", [student_id], result);
+    return res.json(result);
+  });
+});
+
+// Endpoint to get all transactions related to a parent
+app.get("/getStudentTransaction", (req, res) => {
+  console.log("Student Transaction ", req.body);
+  const { student_id } = req.query;
+  const sql = `SELECT 
+    t.transaction_id,
+    t.account_id,
+    t.amount,
+    t.transaction_type,
+    t.transaction_date,
+    t.description,
+    s.name,
+    s.first_name AS student_first_name,
+    s.last_name AS student_last_name
+FROM 
+    Parents p
+JOIN 
+    Students s ON p.parent_id = s.parent_id
+JOIN 
+    Accounts a ON s.id = a.student_id
+JOIN 
+    Transactions t ON a.account_id = t.account_id
+WHERE 
+    s.id = ?;`;
+  db.query(sql, [student_id], (err, result) => {
+    if (err) {
+      return res.json({ error: "Error fetching transactions" });
+    }
+    console.log("@@Studnet Transaction ", [student_id], result);
+    return res.json(result);
+  });
+});
+
+// Endpoint to make payment
+app.post("/makePayment", (req, res) => {
+  const { studentId, amount, paymentType, description, parentId } = req.body;
+  const sql = `INSERT INTO transactions (account_id, amount, transaction_type, transaction_date, description)
+    VALUES (?, ?, ?, NOW(), ?);`;
+
+  db.query(
+    sql,
+    [studentId, amount, paymentType, description],
+    (err, paymentResults) => {
+      //"Payment made"],
+      if (err) {
+        console.error("Error executing payment query:", err);
+        res.status(500).json({ error: "Internal server error" });
+        return;
+      }
+
+      const updateBalanceQuery = `
+        UPDATE accounts
+        SET balance = balance + ?
+        WHERE student_id = ?;
+      `;
+
+      db.query(
+        updateBalanceQuery,
+        [amount, studentId],
+        (err, updateResults) => {
+          if (err) {
+            console.error("Error executing update balance query:", err);
+            res.status(500).json({ error: "Internal server error" });
+            return;
+          }
+
+          res.json({ status: "success" });
+        }
+      );
+    }
+  );
 });
 
 // Endpoint to create student and account
