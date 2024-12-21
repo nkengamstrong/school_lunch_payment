@@ -1,31 +1,28 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+//import "./login.css";
 
-function Login({ onLogin }) {
-  const navigate = useNavigate();
+const Login = ({ onLogin }) => {
   const [values, setValues] = useState({
+    studentId: "",
     email: "",
     password: "",
   });
-  axios.defaults.withCredentials = true;
-
-  const [value, setId] = useState({
-    studentId: "",
-  });
+  const navigate = useNavigate();
 
   const handleCheckBalance = (event) => {
     event.preventDefault();
     axios
-      .post("http://localhost:5000/student", value)
+      .post("http://localhost:5000/student", { studentId: values.studentId })
       .then((res) => {
         if (res.data.message === "Student Identify") {
-          navigate("/balance");
+          navigate("/balance", { state: { studentId: values.studentId } });
         } else {
           alert(res.data.error);
         }
       })
-      .then((err) => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   const handleLogin = (e) => {
@@ -40,37 +37,44 @@ function Login({ onLogin }) {
           alert(res.data.error);
         }
       })
-      .then((err) => console.log(err));
+      .catch((err) => console.log(err));
   };
+
+  const handleChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value });
+  };
+
   return (
     <div className="login-page">
       <div className="side-by-side">
         <form className="login-section" onSubmit={handleLogin}>
-          <h3>Parent Login</h3>
-          <label>UserName:</label>
+          <h2>Login</h2>
           <input
             type="email"
+            name="email"
             placeholder="Email"
-            onChange={(e) => setValues({ ...values, email: e.target.value })}
+            value={values.email}
+            onChange={handleChange}
             required
           />
-          <label>Password:</label>
           <input
             type="password"
+            name="password"
             placeholder="Password"
-            onChange={(e) => setValues({ ...values, password: e.target.value })}
+            value={values.password}
+            onChange={handleChange}
             required
           />
-          <button type="submit">Submit</button>
+          <button type="submit">Login</button>
         </form>
-
         <form className="balance-section" onSubmit={handleCheckBalance}>
-          <h3>Check Student Balance</h3>
-          <label>Student ID:</label>
+          <h2>Check Balance</h2>
           <input
             type="text"
-            placeholder="StudentId"
-            onChange={(e) => setId({ ...value, studentId: e.target.value })}
+            name="studentId"
+            placeholder="Student ID"
+            value={values.studentId}
+            onChange={handleChange}
             required
           />
           <button type="submit">Check Balance</button>
@@ -78,6 +82,6 @@ function Login({ onLogin }) {
       </div>
     </div>
   );
-}
+};
 
 export default Login;
