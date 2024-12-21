@@ -7,6 +7,8 @@ import Signup from "./components/Signup";
 import Footer from "./components/Footer";
 import ParentHomeScreen from "./components/ParentHomeScreen";
 import StudentBalance from "./components/StudentBalance";
+import SchedulePayment from "./components/SchedulePayment";
+import StudentAccountBalance from "./components/StudentAccountBalance";
 import AddStudent from "./components/AddStudent";
 import { checkAuthentication } from "./components/Auth";
 import Makepayment from "./components/Makepayment";
@@ -54,23 +56,29 @@ function App() {
                 path="/home"
                 element={<ParentHomeScreen parent_id={parentId} />}
               />
+              <Route path="/balance" element={<StudentBalance />} />
               <Route
-                path="/balance"
-                element={<StudentBalance parent_id={parentId} />}
+                path="/student/:studentId"
+                element={<StudentAccountBalance parent_id={parentId} />}
               />
               <Route
                 path="/add-student"
                 element={<AddStudent parent_id={parentId} />}
               />
               <Route
-                path="/make-payment"
+                path="/add-money"
                 element={<Makepayment parent_id={parentId} />}
+              />
+              <Route
+                path="/schedule-payment"
+                element={<SchedulePayment parent_id={parentId} />}
               />
             </>
           ) : (
             <>
               <Route path="/" element={<Login onLogin={handleLogin} />} />
               <Route path="/sign-up" element={<Signup />} />
+              <Route path="/balance" element={<StudentBalance />} />
             </>
           )}
         </Routes>
