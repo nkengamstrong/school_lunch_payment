@@ -1,0 +1,23 @@
+.student-balance {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  height: 60vh; /* Full viewport height */
+}
+
+.student-balance h2 {
+  margin-bottom: 20px;
+}
+
+.balance-info {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.error {
+  margin-top: 20px;
+  color: red;
+  text-align: center;
+}

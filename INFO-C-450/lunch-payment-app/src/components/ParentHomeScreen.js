@@ -46,7 +46,15 @@ const ParentHomeScreen = ({ parent_id }) => {
   };
 
   const handleMakePaymentClick = () => {
-    navigate("/make-payment");
+    navigate("/add-money");
+  };
+
+  const handleStudentClick = (studentId) => {
+    navigate(`/student/${studentId}`);
+  };
+
+  const handleSchedulePayment = () => {
+    navigate("/schedule-payment");
   };
 
   return (
@@ -56,7 +64,7 @@ const ParentHomeScreen = ({ parent_id }) => {
         <div className="student-actions">
           <button onClick={handleAddStudent}>Add Child</button>
           <button onClick={handleMakePaymentClick}>Make Payment</button>
-          <button>Schedule Payment</button>
+          <button onClick={handleSchedulePayment}>Schedule Payment</button>
         </div>
         {students.length > 0 ? (
           <table className="students-table">
@@ -69,7 +77,10 @@ const ParentHomeScreen = ({ parent_id }) => {
             </thead>
             <tbody>
               {students.map((student) => (
-                <tr key={student.id}>
+                <tr
+                  key={student.id}
+                  onClick={() => handleStudentClick(student.id)}
+                >
                   <td>
                     <a href={`/student/${student.id}`}>{student.name}</a>
                   </td>
@@ -90,16 +101,21 @@ const ParentHomeScreen = ({ parent_id }) => {
           <table>
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Name</th>
-                <th>Amount</th>
+                <th>Transaction Date</th>
+                <th>Student Name</th>
+                <th>Payment Type</th>
+                <th>Payment Amount</th>
               </tr>
             </thead>
             <tbody>
               {transactions.map((transaction) => (
-                <tr key={transaction.id}>
-                  <td>{transaction.date}</td>
-                  <td>{transaction.name}</td>
+                <tr key={transaction.account_id}>
+                  <td>{transaction.transaction_date}</td>
+                  <td>
+                    {transaction.student_first_name}{" "}
+                    {transaction.student_last_name}
+                  </td>
+                  <td>{transaction.transaction_type}</td>
                   <td>${transaction.amount}</td>
                 </tr>
               ))}

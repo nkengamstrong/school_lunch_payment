@@ -35,23 +35,37 @@ const Nav = ({ isAuthenticated, name, onLogout }) => {
   return (
     <nav className="navbar">
       <div className="navbar-title">
-        <h2>Student School Lunch</h2>
+        <h2 onClick={handleLogIn} style={{ cursor: "pointer" }}>
+          Student School Lunch
+        </h2>
       </div>
       <div className="navbar-links">
         <div>
           {isAuthenticated ? (
             <div>
               <h3>Welcome, {name}</h3>
-              <button onClick={handleLogout} className="nav-btn">
+              <button
+                onClick={handleLogout}
+                className="nav-btn"
+                style={{ cursor: "pointer" }}
+              >
                 Logout
               </button>
             </div>
           ) : (
             <div>
-              <button onClick={handleSignUp} className="nav-btn">
+              <button
+                onClick={handleSignUp}
+                className="nav-btn"
+                style={{ cursor: "pointer" }}
+              >
                 Sign Up
               </button>
-              <button onClick={handleLogIn} className="nav-btn">
+              <button
+                onClick={handleLogIn}
+                className="nav-btn"
+                style={{ cursor: "pointer" }}
+              >
                 Login
               </button>
             </div>
